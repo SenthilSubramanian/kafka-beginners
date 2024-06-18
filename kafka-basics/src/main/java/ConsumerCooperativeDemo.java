@@ -1,7 +1,6 @@
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -11,9 +10,9 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class ConsumerDemo {
+public class ConsumerCooperativeDemo {
 
-    private static final Logger log = LoggerFactory.getLogger(ConsumerDemo.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerCooperativeDemo.class.getSimpleName());
 
     public static void main(String[] args) {
         log.info("Kafka Consumer");
@@ -29,6 +28,8 @@ public class ConsumerDemo {
         props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("group.id", groupId);
         props.put("auto.offset.reset", "earliest"); //none/earliest/latest
+        props.put("partition.assignment.strategy", CooperativeStickyAssignor.class.getName());
+        //props.put("group.instance.id", ".."); //Strategy for static assignment, give different names for each consumer you span
 
         //Create Consumer
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
